@@ -1,0 +1,13 @@
+[Unit]
+Description=Best-effort iBridge USB rebind for Touch Bar
+Before=display-manager.service
+After=systemd-udevd.service
+ConditionPathExists=/usr/local/libexec/mbp-ibridge-rebind.sh
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/libexec/mbp-ibridge-rebind.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target
