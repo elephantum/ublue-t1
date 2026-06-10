@@ -63,12 +63,30 @@ Set flags at build time to disable risky components quickly:
 ENABLE_MBP_TOUCHBAR_REBIND=0 ENABLE_MBP_CAMERA=0 just build
 ```
 
+Touch Bar driver build runs in a separate Containerfile layer by default. You can
+disable that layer or override the DKMS repo:
+
+```bash
+ENABLE_MBP_TOUCHBAR_DKMS_LAYER=0 just build
+MBP_TOUCHBAR_DKMS_REPO=https://github.com/<owner>/<repo>.git just build
+MBP_TOUCHBAR_DKMS_BRANCH=<branch> just build
+```
+
+Default pinned source is `https://github.com/roadrunner2/macbook12-spi-driver.git`
+with branch `touchbar-driver-hid-driver`.
+
 Supported flags in [build_files/build.sh](build_files/build.sh):
 
 - `ENABLE_MBP_WIFI` (default `1`)
 - `ENABLE_MBP_CAMERA` (default `1`)
 - `ENABLE_MBP_SUSPEND_QUIRK` (default `1`)
 - `ENABLE_MBP_TOUCHBAR_REBIND` (default `1`)
+
+Containerfile-specific flags:
+
+- `ENABLE_MBP_TOUCHBAR_DKMS_LAYER` (default `1`)
+- `MBP_TOUCHBAR_DKMS_REPO` (default `https://github.com/roadrunner2/macbook12-spi-driver.git`)
+- `MBP_TOUCHBAR_DKMS_BRANCH` (default `touchbar-driver-hid-driver`)
 
 ## Known constraints
 
