@@ -12,7 +12,7 @@ The local container build backend is Podman.
   - Broadcom BCM43602 firmware config template
    - Broadcom module policy (prefer brcmfmac, blacklist conflicting modules)
   - Camera quirk (`uvcvideo`)
-  - Suspend workaround service (`d3cold_allowed=0`)
+   - Suspend workaround (`s2idle` plus `d3cold_allowed=0`)
   - Best-effort iBridge rebind service for Touch Bar
 
 ## Local build and rebase (same machine)
@@ -22,6 +22,9 @@ The local container build backend is Podman.
    ```bash
    just build
    ```
+
+   This writes the generated build tag to `.just-build-tag` and tags the image
+   with a unique build number, so each build gets its own rebase target.
 
 2. Verify built tag exists:
 
@@ -35,6 +38,9 @@ The local container build backend is Podman.
    just rebase-local
    sudo systemctl reboot
    ```
+
+   `just rebase-local` uses the most recent recorded build tag instead of the
+   generic `local` tag.
 
 4. If the deployment is bad, rollback:
 

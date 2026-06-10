@@ -29,6 +29,7 @@ fi
 if [[ "${ENABLE_MBP_SUSPEND_QUIRK}" != "1" ]]; then
   rm -f /etc/systemd/system/mbp14-d3cold.service || true
   rm -f /usr/local/libexec/mbp14-set-d3cold.sh || true
+  rm -f /etc/systemd/sleep.conf.d/mbp14-suspend.conf || true
 fi
 
 if [[ "${ENABLE_MBP_TOUCHBAR_REBIND}" != "1" ]]; then
