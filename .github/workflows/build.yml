@@ -3,8 +3,20 @@ name: Build and Push
 on:
   push:
     branches: [master]
+    paths:
+      - 'Containerfile'
+      - 'build_files/**'
+      - 'system_files/**'
+      - 'Justfile'
+      - '.github/workflows/**'
   pull_request:
     branches: [master]
+    paths:
+      - 'Containerfile'
+      - 'build_files/**'
+      - 'system_files/**'
+      - 'Justfile'
+      - '.github/workflows/**'
   schedule:
     - cron: '0 4 * * 1'   # weekly Monday — picks up bluefin-dx:latest updates
   workflow_dispatch:

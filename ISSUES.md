@@ -4,6 +4,7 @@
 
 - [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
 - [After sleep on inactivity, screen does not wake up](issues/sleep-screen-no-wake.md)
+- [Sound does not work in browser](issues/sound-no-audio.md)
 
 ## In progress
 
