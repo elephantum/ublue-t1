@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# After resume, force eDP connector re-detection and recover backlight.
+# Needed on MBP14,3 (AMD dGPU + Intel iGPU) which can wake to a black screen.
+[[ "$1" == "post" ]] || exit 0
+
+# Force connector re-detect so the compositor notices the panel is back
+for connector in /sys/class/drm/card*/card*-eDP-*; do
+    echo detect > "${connector}/status" 2>/dev/null || true
+done
+
+# If gmux backlight went to zero, restore it to half-max
+sleep 1
+for bl in /sys/class/backlight/*/brightness; do
+    max=$(cat "$(dirname "${bl}")/max_brightness" 2>/dev/null) || continue
+    current=$(cat "${bl}" 2>/dev/null) || continue
+    if [[ "${current}" == "0" ]] && [[ "${max}" -gt 0 ]]; then
+        echo $(( max / 2 )) > "${bl}" 2>/dev/null || true
+    fi
+done

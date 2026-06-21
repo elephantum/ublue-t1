@@ -28,6 +28,8 @@ if [[ "${ENABLE_MBP_SUSPEND_QUIRK}" != "1" ]]; then
   rm -f /etc/systemd/system/mbp14-d3cold.service || true
   rm -f /usr/libexec/mbp14-set-d3cold.sh || true
   rm -f /etc/systemd/sleep.conf.d/mbp14-suspend.conf || true
+  rm -f /usr/lib/bootc/kargs.d/mbp14-sleep.toml || true
+  rm -f /usr/lib/systemd/system-sleep/mbp14-display-reset || true
 fi
 
 if [[ "${ENABLE_MBP_TOUCHBAR_REBIND}" != "1" ]]; then
@@ -37,6 +39,7 @@ fi
 
 chmod +x /usr/libexec/mbp14-set-d3cold.sh 2>/dev/null || true
 chmod +x /usr/libexec/mbp-ibridge-rebind.sh 2>/dev/null || true
+chmod +x /usr/lib/systemd/system-sleep/mbp14-display-reset 2>/dev/null || true
 
 systemctl enable mbp14-d3cold.service 2>/dev/null || true
 systemctl enable mbp-ibridge-rebind.service 2>/dev/null || true
