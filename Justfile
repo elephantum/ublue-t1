@@ -6,7 +6,14 @@ build_tag_file := ".just-build-tag"
 base_image := "ghcr.io/ublue-os/bluefin-dx:latest"
 
 build target_image=image_name:
-    build_tag="$(date +%Y%m%d%H%M%S%N)"; sudo podman build --build-arg BASE_IMAGE={{base_image}} --build-arg ENABLE_MBP_TOUCHBAR_DKMS_LAYER="${ENABLE_MBP_TOUCHBAR_DKMS_LAYER:-1}" --build-arg MBP_TOUCHBAR_DKMS_REPO="${MBP_TOUCHBAR_DKMS_REPO:-}" --build-arg MBP_TOUCHBAR_DKMS_BRANCH="${MBP_TOUCHBAR_DKMS_BRANCH:-touchbar-driver-hid-driver}" --tag localhost/{{target_image}}:${build_tag} --tag localhost/{{target_image}}:{{default_tag}} .; printf '%s\n' "${build_tag}" > "{{build_tag_file}}"
+    build_tag="$(date +%Y%m%d%H%M%S%N)"; sudo podman build \
+      --build-arg BASE_IMAGE={{base_image}} \
+      --build-arg ENABLE_MBP_TOUCHBAR_DKMS_LAYER="${ENABLE_MBP_TOUCHBAR_DKMS_LAYER:-1}" \
+      --build-arg MBP_TOUCHBAR_DKMS_REPO="${MBP_TOUCHBAR_DKMS_REPO:-https://github.com/nanachi2002/macbook12-spi-driver.git}" \
+      --build-arg MBP_TOUCHBAR_DKMS_BRANCH="${MBP_TOUCHBAR_DKMS_BRANCH:-fix/kernel-6.17-compat}" \
+      --tag localhost/{{target_image}}:${build_tag} \
+      --tag localhost/{{target_image}}:{{default_tag}} .; \
+    printf '%s\n' "${build_tag}" > "{{build_tag_file}}"
 
 list-images:
     sudo podman images | grep "mbp14-3-bluefin\|REPOSITORY"

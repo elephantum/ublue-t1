@@ -1,63 +1,33 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-: "${ENABLE_MBP_TOUCHBAR_DKMS:=1}"
-: "${MBP_TOUCHBAR_DKMS_REPO:=https://github.com/roadrunner2/macbook12-spi-driver.git}"
-: "${MBP_TOUCHBAR_DKMS_BRANCH:=touchbar-driver-hid-driver}"
-
-if [[ "${ENABLE_MBP_TOUCHBAR_DKMS}" != "1" ]]; then
-  echo "Touch Bar DKMS layer disabled (ENABLE_MBP_TOUCHBAR_DKMS=${ENABLE_MBP_TOUCHBAR_DKMS})."
-  exit 0
-fi
-
-echo "Starting best-effort Touch Bar DKMS build layer"
-
-dnf5 install -y \
-  dkms \
-  git \
-  gcc \
-  make \
-  kernel-devel \
-  kernel-headers || true
-
-workdir="$(mktemp -d)"
-cleanup() {
-  rm -rf "${workdir}"
-}
-trap cleanup EXIT
-
-src_dir="${workdir}/src"
-echo "Using pinned Touch Bar DKMS source: ${MBP_TOUCHBAR_DKMS_REPO} (branch: ${MBP_TOUCHBAR_DKMS_BRANCH})"
-if ! git clone --depth 1 --branch "${MBP_TOUCHBAR_DKMS_BRANCH}" "${MBP_TOUCHBAR_DKMS_REPO}" "${src_dir}"; then
-  echo "Clone failed for pinned Touch Bar repo"
-  exit 0
-fi
-
-if [[ ! -f "${src_dir}/dkms.conf" ]]; then
-  echo "No dkms.conf in pinned repo/branch; skipping DKMS build"
-  exit 0
-fi
+src_dir="/usr/src/touchbar-driver-src"
+kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)"
+echo "Building touchbar module for kernel: ${kernel_version}"
 
 module_name="$(sed -n 's/^PACKAGE_NAME="\?\([^" ]*\)"\?$/\1/p' "${src_dir}/dkms.conf" | head -n1)"
 module_version="$(sed -n 's/^PACKAGE_VERSION="\?\([^" ]*\)"\?$/\1/p' "${src_dir}/dkms.conf" | head -n1)"
-
-if [[ -z "${module_name}" || -z "${module_version}" ]]; then
-  echo "Could not parse PACKAGE_NAME/PACKAGE_VERSION from dkms.conf"
-  exit 0
-fi
+echo "Module: ${module_name} version ${module_version}"
 
 target_src="/usr/src/${module_name}-${module_version}"
 rm -rf "${target_src}"
 cp -a "${src_dir}" "${target_src}"
 
-dkms remove -m "${module_name}" -v "${module_version}" --all || true
+dkms remove -m "${module_name}" -v "${module_version}" --all 2>/dev/null || true
+dkms add     -m "${module_name}" -v "${module_version}"
 
-if dkms add -m "${module_name}" -v "${module_version}" \
-  && dkms build -m "${module_name}" -v "${module_version}" \
-  && dkms install -m "${module_name}" -v "${module_version}"; then
-  echo "Touch Bar DKMS build succeeded"
-else
-  echo "Touch Bar DKMS build did not succeed for pinned repo/branch"
+if ! dkms build -m "${module_name}" -v "${module_version}" --kernelversion "${kernel_version}"; then
+  echo "=== DKMS build failed — make.log ==="
+  cat "/var/lib/dkms/${module_name}/${module_version}/build/make.log" 2>/dev/null || true
+  exit 1
 fi
 
-exit 0
+touch /tmp/dkms-install-stamp
+dkms install -m "${module_name}" -v "${module_version}" --kernelversion "${kernel_version}"
+
+mkdir -p /output
+find "/lib/modules/${kernel_version}" -newer /tmp/dkms-install-stamp \
+  \( -name "*.ko" -o -name "*.ko.zst" -o -name "*.ko.xz" \) \
+  -exec cp {} /output/ \;
+
+echo "Touchbar DKMS build complete. Modules: $(ls /output/)"

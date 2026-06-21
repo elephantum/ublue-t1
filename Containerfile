@@ -1,12 +1,27 @@
-ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin:latest
-FROM ${BASE_IMAGE}
+ARG BASE_IMAGE=ghcr.io/ublue-os/bluefin-dx:latest
+ARG MBP_TOUCHBAR_DKMS_REPO=https://github.com/nanachi2002/macbook12-spi-driver.git
+ARG MBP_TOUCHBAR_DKMS_BRANCH=fix/kernel-6.17-compat
 
+# Stage 1: Build touchbar kernel module using the same base image (guaranteed kernel match)
+FROM ${BASE_IMAGE} AS touchbar-builder
+
+# Layer 1: Install build deps — cached until base image kernel changes
+RUN kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
+    dnf5 install -y dkms git gcc make "kernel-devel-${kernel_version}"
+
+# Layer 2: Clone source — cached until REPO/BRANCH args change
+ARG MBP_TOUCHBAR_DKMS_REPO
+ARG MBP_TOUCHBAR_DKMS_BRANCH
+RUN git clone --depth 1 --branch "${MBP_TOUCHBAR_DKMS_BRANCH}" \
+      "${MBP_TOUCHBAR_DKMS_REPO}" /usr/src/touchbar-driver-src
+
+# Layer 3: DKMS build — cached until script or source changes
+COPY build_files/mbp-touchbar-dkms-build.sh /tmp/build-module.sh
+RUN bash /tmp/build-module.sh
+
+# Stage 2: Main image
+FROM ${BASE_IMAGE}
 ARG ENABLE_MBP_TOUCHBAR_DKMS_LAYER=1
-ARG MBP_TOUCHBAR_DKMS_REPO=
-ARG MBP_TOUCHBAR_DKMS_BRANCH=touchbar-driver-hid-driver
-ENV ENABLE_MBP_TOUCHBAR_DKMS=${ENABLE_MBP_TOUCHBAR_DKMS_LAYER}
-ENV MBP_TOUCHBAR_DKMS_REPO=${MBP_TOUCHBAR_DKMS_REPO}
-ENV MBP_TOUCHBAR_DKMS_BRANCH=${MBP_TOUCHBAR_DKMS_BRANCH}
 
 COPY build_files/build.sh /tmp/build.sh
 COPY system_files/ /
@@ -15,11 +30,15 @@ RUN chmod +x /tmp/build.sh \
     && /tmp/build.sh \
     && rm -f /tmp/build.sh
 
-# Separate layer: best-effort Touch Bar driver DKMS build.
-COPY build_files/mbp-touchbar-dkms-build.sh /tmp/mbp-touchbar-dkms-build.sh
-RUN chmod +x /tmp/mbp-touchbar-dkms-build.sh \
-    && /tmp/mbp-touchbar-dkms-build.sh \
-    && rm -f /tmp/mbp-touchbar-dkms-build.sh
+COPY --from=touchbar-builder /output/ /tmp/touchbar-modules/
+RUN if [[ "${ENABLE_MBP_TOUCHBAR_DKMS_LAYER}" == "1" ]]; then \
+      kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
+      mkdir -p "/usr/lib/modules/${kernel_version}/extra/" && \
+      find /tmp/touchbar-modules/ -maxdepth 1 \( -name "*.ko" -o -name "*.ko.zst" -o -name "*.ko.xz" \) \
+        -exec cp {} "/usr/lib/modules/${kernel_version}/extra/" \; && \
+      depmod -a "${kernel_version}"; \
+    fi && \
+    rm -rf /tmp/touchbar-modules
 
 LABEL org.opencontainers.image.title="mbp14-3-bluefin"
 LABEL org.opencontainers.image.description="Local Bluefin derivative for MacBookPro14,3"
