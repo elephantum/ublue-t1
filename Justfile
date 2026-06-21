@@ -16,6 +16,9 @@ build target_image=image_name:
       --tag localhost/{{target_image}}:{{default_tag}} .; \
     printf '%s\n' "${build_tag}" > "{{build_tag_file}}"
 
+rebase-remote:
+    sudo rpm-ostree rebase ostree-unverified-image:docker://ghcr.io/elephantum/ublue-t1:latest
+
 list-images:
     sudo podman images | grep "mbp14-3-bluefin\|REPOSITORY"
 
