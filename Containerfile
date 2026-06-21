@@ -40,6 +40,8 @@ RUN if [[ "${ENABLE_MBP_TOUCHBAR_DKMS_LAYER}" == "1" ]]; then \
     fi && \
     rm -rf /tmp/touchbar-modules
 
-LABEL org.opencontainers.image.title="mbp14-3-bluefin"
-LABEL org.opencontainers.image.description="Local Bluefin derivative for MacBookPro14,3"
+ARG VERSION=latest
+LABEL org.opencontainers.image.title="ublue-t1"
+LABEL org.opencontainers.image.description="Custom Bluefin derivative for MacBookPro14,3"
 LABEL org.opencontainers.image.vendor="local"
+LABEL org.opencontainers.image.version="${VERSION}"

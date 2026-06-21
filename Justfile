@@ -8,6 +8,7 @@ base_image := "ghcr.io/ublue-os/bluefin-dx:latest"
 build target_image=image_name:
     build_tag="$(date +%Y%m%d%H%M%S%N)"; sudo podman build \
       --build-arg BASE_IMAGE={{base_image}} \
+      --build-arg VERSION="$(date +%Y%m%d)" \
       --build-arg ENABLE_MBP_TOUCHBAR_DKMS_LAYER="${ENABLE_MBP_TOUCHBAR_DKMS_LAYER:-1}" \
       --build-arg MBP_TOUCHBAR_DKMS_REPO="${MBP_TOUCHBAR_DKMS_REPO:-https://github.com/nanachi2002/macbook12-spi-driver.git}" \
       --build-arg MBP_TOUCHBAR_DKMS_BRANCH="${MBP_TOUCHBAR_DKMS_BRANCH:-fix/kernel-6.17-compat}" \
