@@ -1,15 +1,26 @@
 #!/usr/bin/env bash
-# After resume, force eDP connector re-detection and recover backlight.
-# Needed on MBP14,3 (AMD dGPU + Intel iGPU) which can wake to a black screen.
+# Post-resume display recovery for MBP14,3 (AMD dGPU driving eDP-1).
+# Handles black screen after wake by kicking DRM, VT, and gnome-shell.
 [[ "$1" == "post" ]] || exit 0
 
-# Force connector re-detect so the compositor notices the panel is back
+# Force DRM connector re-detection
 for connector in /sys/class/drm/card*/card*-eDP-*; do
     echo detect > "${connector}/status" 2>/dev/null || true
 done
 
-# If gmux backlight went to zero, restore it to half-max
-sleep 1
+# Give GPU time to settle before VT operations
+sleep 2
+
+# VT bounce: forces kernel to re-render the active console/display
+current_vt=$(fgconsole 2>/dev/null || echo 2)
+chvt $(( current_vt == 1 ? 2 : 1 )) 2>/dev/null || true
+sleep 0.3
+chvt "${current_vt}" 2>/dev/null || true
+
+# Restart gnome-shell in-place (SIGUSR2 = safe reload, no session loss)
+pkill -USR2 gnome-shell 2>/dev/null || true
+
+# Restore backlight if it woke at zero
 for bl in /sys/class/backlight/*/brightness; do
     max=$(cat "$(dirname "${bl}")/max_brightness" 2>/dev/null) || continue
     current=$(cat "${bl}" 2>/dev/null) || continue
