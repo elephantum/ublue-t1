@@ -1,13 +1,16 @@
-Backlog (here are issues that wait to be started):
+# Issues
 
-* Touchbar is dark and inactive
-* After macbook goes to sleep on inactivity, screen does not wake up
-* Camera does not show up in standard apps like "Camera"
+## Backlog
 
-In progress (here are issues that we are working on, we write progress notes in sub-bullets):
+- [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
+- [After sleep on inactivity, screen does not wake up](issues/sleep-screen-no-wake.md)
 
-Tesing (here are issues that are ready to be tested):
+## In progress
 
-Done:
+## Testing
 
-* Image name is shown as Bluefin in GRUB
+- [Camera does not show up in standard apps like "Camera"](issues/camera-not-visible.md)
+
+## Done
+
+- [Image name shown as Bluefin in GRUB](issues/grub-name-bluefin.md)
