@@ -2,7 +2,7 @@ name: Build and Push
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   schedule:
     - cron: '0 4 * * 1'   # weekly Monday — picks up bluefin-dx:latest updates
   workflow_dispatch:
