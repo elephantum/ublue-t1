@@ -7,8 +7,6 @@ set -euo pipefail
 : "${ENABLE_MBP_SUSPEND_QUIRK:=1}"
 : "${ENABLE_MBP_TOUCHBAR_REBIND:=1}"
 
-mkdir -p /usr/local/libexec
-
 # Keep package install minimal and deterministic for local iteration.
 dnf5 install -y \
   iwlwifi-dvm-firmware \
@@ -28,17 +26,17 @@ fi
 
 if [[ "${ENABLE_MBP_SUSPEND_QUIRK}" != "1" ]]; then
   rm -f /etc/systemd/system/mbp14-d3cold.service || true
-  rm -f /usr/local/libexec/mbp14-set-d3cold.sh || true
+  rm -f /usr/libexec/mbp14-set-d3cold.sh || true
   rm -f /etc/systemd/sleep.conf.d/mbp14-suspend.conf || true
 fi
 
 if [[ "${ENABLE_MBP_TOUCHBAR_REBIND}" != "1" ]]; then
   rm -f /etc/systemd/system/mbp-ibridge-rebind.service || true
-  rm -f /usr/local/libexec/mbp-ibridge-rebind.sh || true
+  rm -f /usr/libexec/mbp-ibridge-rebind.sh || true
 fi
 
-chmod +x /usr/local/libexec/mbp14-set-d3cold.sh 2>/dev/null || true
-chmod +x /usr/local/libexec/mbp-ibridge-rebind.sh 2>/dev/null || true
+chmod +x /usr/libexec/mbp14-set-d3cold.sh 2>/dev/null || true
+chmod +x /usr/libexec/mbp-ibridge-rebind.sh 2>/dev/null || true
 
 systemctl enable mbp14-d3cold.service 2>/dev/null || true
 systemctl enable mbp-ibridge-rebind.service 2>/dev/null || true

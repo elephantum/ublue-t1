@@ -3,6 +3,8 @@ name: Build and Push
 on:
   push:
     branches: [master]
+  pull_request:
+    branches: [master]
   schedule:
     - cron: '0 4 * * 1'   # weekly Monday — picks up bluefin-dx:latest updates
   workflow_dispatch:
@@ -29,15 +31,32 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set version
-        run: echo "VERSION=$(date +%Y%m%d).${{ github.run_number }}" >> "$GITHUB_ENV"
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "VERSION=$(date +%Y%m%d).pr${{ github.event.pull_request.number }}.${{ github.run_number }}" >> "$GITHUB_ENV"
+          else
+            echo "VERSION=$(date +%Y%m%d).${{ github.run_number }}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Set tags
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo "TAGS=${{ env.IMAGE }}:${{ env.VERSION }}" >> "$GITHUB_ENV"
+          else
+            {
+              echo 'TAGS<<EOF'
+              echo '${{ env.IMAGE }}:latest'
+              echo '${{ env.IMAGE }}:${{ env.VERSION }}'
+              echo 'EOF'
+            } >> "$GITHUB_ENV"
+          fi
 
       - uses: docker/build-push-action@v6
         with:
           context: .
+          file: Containerfile
           push: true
-          tags: |
-            ${{ env.IMAGE }}:latest
-            ${{ env.IMAGE }}:${{ env.VERSION }}
+          tags: ${{ env.TAGS }}
           build-args: |
             VERSION=${{ env.VERSION }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
