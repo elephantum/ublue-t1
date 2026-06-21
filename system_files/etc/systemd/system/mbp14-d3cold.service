@@ -1,11 +1,11 @@
 [Unit]
 Description=Disable NVMe d3cold for MBP14,3 suspend resume stability
 After=local-fs.target
-ConditionPathExists=/usr/local/libexec/mbp14-set-d3cold.sh
+ConditionPathExists=/usr/libexec/mbp14-set-d3cold.sh
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/libexec/mbp14-set-d3cold.sh
+ExecStart=/usr/libexec/mbp14-set-d3cold.sh
 RemainAfterExit=true
 
 [Install]
