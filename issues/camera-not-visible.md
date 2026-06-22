@@ -1,6 +1,6 @@
 # Camera does not show up in standard apps like "Camera"
 
-**Status:** Testing
+**Status:** Done
 
 ## Root cause
 
@@ -36,3 +36,5 @@ ls /dev/video*     # check if camera appears as a video device
 ## Test results
 
 Did not help, will restore EFI and try again
+
+**Resolution:** Restoring the EFI partition fixed the camera. The T1 chip requires macOS EFI initialization to expose the full UVC interface — without it, iBridge stays in recovery mode regardless of USB rebind tricks.
