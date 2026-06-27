@@ -1,6 +1,12 @@
-# After sleep on inactivity, screen does not wake up
+# Suspend from GNOME menu does not wake up
 
 **Status:** Backlog
+
+## Description
+
+Sleep on inactivity works fine — system wakes on keyboard, screen comes back, all good.
+
+However, when selecting "Suspend" from the GNOME menu, the system does not wake up: screen stays dark and keyboard does not light up (suggesting the whole system may not be waking, not just the display).
 
 ## Notes
 
