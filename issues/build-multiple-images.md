@@ -1,6 +1,6 @@
 # Build multiple images
 
-**Status:** Testing
+**Status:** Done
 
 ## Description
 

@@ -1,6 +1,6 @@
 # Touchbar is dark and inactive
 
-**Status:** Testing
+**Status:** Done
 
 ## Root cause
 

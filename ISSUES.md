@@ -11,11 +11,12 @@
 
 ## Testing
 
-- [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
-- [Build multiple images](issues/build-multiple-images.md)
-- [Show full build number in GRUB](issues/grub-full-build-number.md)
+
 
 ## Done
 
+- [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
+- [Build multiple images](issues/build-multiple-images.md)
+- [Show full build number in GRUB](issues/grub-full-build-number.md)
 - [Image name shown as Bluefin in GRUB](issues/grub-name-bluefin.md)
 - [Camera does not show up in standard apps like "Camera"](issues/camera-not-visible.md)

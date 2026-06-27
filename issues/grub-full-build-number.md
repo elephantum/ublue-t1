@@ -1,6 +1,6 @@
 # Show full build number in GRUB
 
-**Status:** Testing
+**Status:** Done
 
 ## Description
 
