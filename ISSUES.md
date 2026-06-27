@@ -4,6 +4,7 @@
 
 - [Sound does not work in browser](issues/sound-no-audio.md)
 - [After sleep on inactivity, screen does not wake up](issues/sleep-screen-no-wake.md)
+- [Touch ID does not work](issues/touch-id-not-working.md)
 
 ## In progress
 
