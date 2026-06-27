@@ -66,20 +66,13 @@ just rollback
 sudo systemctl reboot
 ```
 
-### Build-time flags
+### Touchbar driver source
 
-Disable specific components to isolate issues:
+Default touchbar driver source: `https://github.com/nanachi2002/macbook12-spi-driver.git`, branch `fix/kernel-6.17-compat`.
+
+Override at build time:
 
 ```bash
-ENABLE_MBP_WIFI=0 just build
-ENABLE_MBP_CAMERA=0 just build
-ENABLE_MBP_SUSPEND_QUIRK=0 just build
-ENABLE_MBP_TOUCHBAR_REBIND=0 just build
-
-# Disable or override the touchbar DKMS kernel module build
-ENABLE_MBP_TOUCHBAR_DKMS_LAYER=0 just build
 MBP_TOUCHBAR_DKMS_REPO=https://github.com/<fork>.git just build
 MBP_TOUCHBAR_DKMS_BRANCH=<branch> just build
 ```
-
-Default touchbar driver source: `https://github.com/nanachi2002/macbook12-spi-driver.git`, branch `fix/kernel-6.17-compat`.

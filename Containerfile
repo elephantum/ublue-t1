@@ -21,7 +21,6 @@ RUN bash /tmp/build-module.sh
 
 # Stage 2: Main image
 FROM ${BASE_IMAGE}
-ARG ENABLE_MBP_TOUCHBAR_DKMS_LAYER=1
 ARG IMAGE_NAME=ublue-t1
 ARG VERSION=latest
 
@@ -33,13 +32,11 @@ RUN chmod +x /tmp/build.sh \
     && rm -f /tmp/build.sh
 
 COPY --from=touchbar-builder /output/ /tmp/touchbar-modules/
-RUN if [[ "${ENABLE_MBP_TOUCHBAR_DKMS_LAYER}" == "1" ]]; then \
-      kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
-      mkdir -p "/usr/lib/modules/${kernel_version}/extra/" && \
-      find /tmp/touchbar-modules/ -maxdepth 1 \( -name "*.ko" -o -name "*.ko.zst" -o -name "*.ko.xz" \) \
-        -exec cp {} "/usr/lib/modules/${kernel_version}/extra/" \; && \
-      depmod -a "${kernel_version}"; \
-    fi && \
+RUN kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
+    mkdir -p "/usr/lib/modules/${kernel_version}/extra/" && \
+    find /tmp/touchbar-modules/ -maxdepth 1 \( -name "*.ko" -o -name "*.ko.zst" -o -name "*.ko.xz" \) \
+      -exec cp {} "/usr/lib/modules/${kernel_version}/extra/" \; && \
+    depmod -a "${kernel_version}" && \
     rm -rf /tmp/touchbar-modules
 
 LABEL org.opencontainers.image.title="${IMAGE_NAME}"
