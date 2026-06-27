@@ -10,10 +10,11 @@
 
 ## Testing
 
-- [Sound does not work in browser](issues/sound-no-audio.md)
+
 
 ## Done
 
+- [Sound does not work in browser](issues/sound-no-audio.md)
 - [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
 - [Build multiple images](issues/build-multiple-images.md)
 - [Show full build number in GRUB](issues/grub-full-build-number.md)

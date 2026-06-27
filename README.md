@@ -12,7 +12,7 @@ Built on top of [Universal Blue](https://universal-blue.org/) / Fedora Silverblu
 | Camera (FaceTime HD) | Works | requires macOS EFI partition to be intact |
 | Touch Bar | Works | iBridge rebind service + DKMS driver |
 | Suspend/resume | Mostly works | s2idle + d3cold quirk; screen occasionally doesn't wake |
-| Sound in browser | Broken | not yet resolved |
+| Sound | Works | custom Cirrus CS8409 codec driver (davidjo/snd_hda_macbookpro) |
 | Touch ID | Not supported | out of scope |
 
 ## Quick start
@@ -46,6 +46,7 @@ All variants ship the same hardware fix layer on top of the base image:
 - **Camera**: `uvcvideo` quirk for the iBridge UVC interface
 - **Touch Bar**: `mbp-ibridge-rebind` service that re-enumerates iBridge at boot and rebinds the HID display interface from `hid-sensor-hub` to `apple-ibridge-hid`, activating the touchbar driver
 - **Suspend**: `s2idle` sleep mode + `d3cold_allowed=0` workaround to prevent hangs on suspend/resume
+- **Sound**: Custom Cirrus CS8409 codec driver with Apple MacBook Pro amplifier support
 
 ## Building locally
 
@@ -75,4 +76,15 @@ Override at build time:
 ```bash
 MBP_TOUCHBAR_DKMS_REPO=https://github.com/<fork>.git just build
 MBP_TOUCHBAR_DKMS_BRANCH=<branch> just build
+```
+
+### Audio driver source
+
+Default audio driver source: `https://github.com/davidjo/snd_hda_macbookpro.git`, branch `master`.
+
+Override at build time:
+
+```bash
+MBP_AUDIO_DKMS_REPO=https://github.com/<fork>.git just build
+MBP_AUDIO_DKMS_BRANCH=<branch> just build
 ```

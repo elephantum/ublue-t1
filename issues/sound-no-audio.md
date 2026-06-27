@@ -1,6 +1,6 @@
 # Sound does not work in browser (YouTube)
 
-**Status:** Testing
+**Status:** Done
 
 ## Root cause
 
@@ -26,3 +26,5 @@ Also added `/etc/modules-load.d/mbp14-audio.conf` to auto-load `snd_hda_macbookp
 4. Play audio in Firefox/YouTube
 
 ## Notes
+
+Fix confirmed working. Key issue was module precedence: both in-tree `kernel/sound/hda/codecs/cirrus/snd-hda-codec-cs8409.ko.xz` and our patched `extra/snd-hda-codec-cs8409.ko.xz` existed, and depmod was resolving to the in-tree version. Solution: delete the in-tree module so `depmod` prioritizes the custom driver from `extra/`. This is now done in the Containerfile.

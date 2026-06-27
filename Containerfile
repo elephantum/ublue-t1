@@ -63,8 +63,9 @@ RUN kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
     mkdir -p "/usr/lib/modules/${kernel_version}/extra/" && \
     find /tmp/audio-modules/ -maxdepth 1 \( -name "*.ko" -o -name "*.ko.zst" -o -name "*.ko.xz" \) \
       -exec cp {} "/usr/lib/modules/${kernel_version}/extra/" \; && \
-    depmod -a "${kernel_version}" && \
-    rm -rf /tmp/audio-modules
+    rm -rf /tmp/audio-modules && \
+    find "/usr/lib/modules/${kernel_version}/kernel" -name "snd-hda-codec-cs8409.ko*" -delete && \
+    depmod -a "${kernel_version}"
 
 LABEL org.opencontainers.image.title="${IMAGE_NAME}"
 LABEL org.opencontainers.image.description="Custom Bluefin derivative for MacBookPro14,3"
