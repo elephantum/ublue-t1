@@ -23,7 +23,7 @@ different use cases.
 
 ## Fixes applied
 
-- Added matrix strategy in `.github/workflows/build.yml` with three variants: `silverblue-t1`, `bluefin-t1`, `bluefin-dx-t1`
+- Added matrix strategy in `.github/workflows/build.yml` with three variants: `silverblue-main-t1`, `bluefin-t1`, `bluefin-dx-t1`
 - Each variant builds from its corresponding base image and pushes to `ghcr.io/elephantum/<image_name>`
 - Added `IMAGE_NAME` ARG to `Containerfile`, passed to `build.sh` and used in OCI labels
 - Separate buildcache per variant
