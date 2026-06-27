@@ -30,10 +30,10 @@ jobs:
     strategy:
       matrix:
         include:
-          - image_name: silverblue-main-t1
-            base_image: ghcr.io/ublue-os/silverblue-main:latest
-          - image_name: bluefin-t1
-            base_image: ghcr.io/ublue-os/bluefin:latest
+          # - image_name: silverblue-main-t1
+          #   base_image: ghcr.io/ublue-os/silverblue-main:latest
+          # - image_name: bluefin-t1
+          #   base_image: ghcr.io/ublue-os/bluefin:latest
           - image_name: bluefin-dx-t1
             base_image: ghcr.io/ublue-os/bluefin-dx:latest
 
