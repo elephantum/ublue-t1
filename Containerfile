@@ -22,12 +22,14 @@ RUN bash /tmp/build-module.sh
 # Stage 2: Main image
 FROM ${BASE_IMAGE}
 ARG ENABLE_MBP_TOUCHBAR_DKMS_LAYER=1
+ARG IMAGE_NAME=ublue-t1
+ARG VERSION=latest
 
 COPY build_files/build.sh /tmp/build.sh
 COPY system_files/ /
 
 RUN chmod +x /tmp/build.sh \
-    && /tmp/build.sh \
+    && IMAGE_NAME="${IMAGE_NAME}" VERSION="${VERSION}" /tmp/build.sh \
     && rm -f /tmp/build.sh
 
 COPY --from=touchbar-builder /output/ /tmp/touchbar-modules/
@@ -40,8 +42,7 @@ RUN if [[ "${ENABLE_MBP_TOUCHBAR_DKMS_LAYER}" == "1" ]]; then \
     fi && \
     rm -rf /tmp/touchbar-modules
 
-ARG VERSION=latest
-LABEL org.opencontainers.image.title="ublue-t1"
+LABEL org.opencontainers.image.title="${IMAGE_NAME}"
 LABEL org.opencontainers.image.description="Custom Bluefin derivative for MacBookPro14,3"
 LABEL org.opencontainers.image.vendor="local"
 LABEL org.opencontainers.image.version="${VERSION}"

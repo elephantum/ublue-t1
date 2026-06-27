@@ -18,11 +18,8 @@ on:
       - 'Justfile'
       - '.github/workflows/**'
   schedule:
-    - cron: '0 4 * * 1'   # weekly Monday — picks up bluefin-dx:latest updates
+    - cron: '0 4 * * 1'   # weekly Monday — picks up base image updates
   workflow_dispatch:
-
-env:
-  IMAGE: ghcr.io/elephantum/ublue-t1
 
 jobs:
   build:
@@ -30,6 +27,15 @@ jobs:
     permissions:
       contents: read
       packages: write
+    strategy:
+      matrix:
+        include:
+          - image_name: silverblue-t1
+            base_image: ghcr.io/ublue-os/silverblue:latest
+          - image_name: bluefin-t1
+            base_image: ghcr.io/ublue-os/bluefin:latest
+          - image_name: bluefin-dx-t1
+            base_image: ghcr.io/ublue-os/bluefin-dx:latest
 
     steps:
       - uses: actions/checkout@v4
@@ -52,16 +58,18 @@ jobs:
 
       - name: Set tags
         run: |
+          IMAGE=ghcr.io/elephantum/${{ matrix.image_name }}
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "TAGS=${{ env.IMAGE }}:${{ env.VERSION }}" >> "$GITHUB_ENV"
+            echo "TAGS=${IMAGE}:${{ env.VERSION }}" >> "$GITHUB_ENV"
           else
             {
               echo 'TAGS<<EOF'
-              echo '${{ env.IMAGE }}:latest'
-              echo '${{ env.IMAGE }}:${{ env.VERSION }}'
+              echo "${IMAGE}:latest"
+              echo "${IMAGE}:${{ env.VERSION }}"
               echo 'EOF'
             } >> "$GITHUB_ENV"
           fi
+          echo "IMAGE=${IMAGE}" >> "$GITHUB_ENV"
 
       - uses: docker/build-push-action@v6
         with:
@@ -71,5 +79,7 @@ jobs:
           tags: ${{ env.TAGS }}
           build-args: |
             VERSION=${{ env.VERSION }}
+            BASE_IMAGE=${{ matrix.base_image }}
+            IMAGE_NAME=${{ matrix.image_name }}
           cache-from: type=registry,ref=${{ env.IMAGE }}:buildcache
           cache-to:   type=registry,ref=${{ env.IMAGE }}:buildcache,mode=max

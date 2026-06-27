@@ -1,11 +1,11 @@
-# mbp14-3-bluefin
+# bluefin-dx-t1
 
 Local Bluefin-derived image project for MacBookPro14,3 with same-machine build and rebase workflow.
 The local container build backend is Podman.
 
 ## What is implemented
 
-- Base image build from `ghcr.io/ublue-os/bluefin:latest` via [Containerfile](Containerfile)
+- Default image build from `ghcr.io/ublue-os/bluefin-dx:latest` (`bluefin-dx-t1`) via [Containerfile](Containerfile); also builds `silverblue-t1` and `bluefin-t1`
 - Local build/rebase helpers via [Justfile](Justfile)
 - Feature-flagged build customization in [build_files/build.sh](build_files/build.sh)
 - MBP-specific files under [system_files](system_files)

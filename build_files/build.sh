@@ -6,6 +6,26 @@ set -euo pipefail
 : "${ENABLE_MBP_CAMERA:=1}"
 : "${ENABLE_MBP_SUSPEND_QUIRK:=1}"
 : "${ENABLE_MBP_TOUCHBAR_REBIND:=1}"
+: "${IMAGE_NAME:=ublue-t1}"
+: "${VERSION:=latest}"
+
+cat > /usr/lib/os-release <<EOF
+NAME="${IMAGE_NAME}"
+VERSION="${VERSION}"
+ID=${IMAGE_NAME}
+ID_LIKE="fedora"
+VERSION_ID=44
+PLATFORM_ID="platform:f44"
+PRETTY_NAME="${IMAGE_NAME} (${VERSION})"
+ANSI_COLOR="0;38;2;60;110;180"
+LOGO=fedora-logo-icon
+DEFAULT_HOSTNAME="mbp-t1"
+HOME_URL="https://github.com/elephantum/ublue-t1"
+BUG_REPORT_URL="https://github.com/elephantum/ublue-t1/issues"
+VARIANT="Silverblue"
+VARIANT_ID=silverblue
+IMAGE_ID="${IMAGE_NAME}"
+EOF
 
 # Keep package install minimal and deterministic for local iteration.
 dnf5 install -y \

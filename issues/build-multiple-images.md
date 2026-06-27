@@ -1,6 +1,6 @@
 # Build multiple images
 
-**Status:** Backlog
+**Status:** Testing
 
 ## Description
 
@@ -23,11 +23,16 @@ different use cases.
 
 ## Fixes applied
 
-(Pending)
+- Added matrix strategy in `.github/workflows/build.yml` with three variants: `silverblue-t1`, `bluefin-t1`, `bluefin-dx-t1`
+- Each variant builds from its corresponding base image and pushes to `ghcr.io/elephantum/<image_name>`
+- Added `IMAGE_NAME` ARG to `Containerfile`, passed to `build.sh` and used in OCI labels
+- Separate buildcache per variant
 
 ## Testing
 
-(Pending)
+1. Push a commit to master and verify three parallel CI jobs run (one per variant)
+2. Check that `ghcr.io/elephantum/silverblue-t1:latest`, `ghcr.io/elephantum/bluefin-t1:latest`, and `ghcr.io/elephantum/bluefin-dx-t1:latest` are published
+3. Run `just rebase-remote` pointing at one of the new images and confirm it boots
 
 ## Notes
 
