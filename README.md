@@ -1,95 +1,85 @@
-# bluefin-dx-t1
+# ublue-t1
 
-Local Bluefin-derived image project for MacBookPro14,3 with same-machine build and rebase workflow.
-The local container build backend is Podman.
+Custom Universal Blue images for **MacBookPro14,3** (2017 15-inch with T1 chip).
 
-## What is implemented
+Built on top of [Universal Blue](https://universal-blue.org/) / Fedora Silverblue, with hardware quirks baked in so things work out of the box.
 
-- Default image build from `ghcr.io/ublue-os/bluefin-dx:latest` (`bluefin-dx-t1`) via [Containerfile](Containerfile); also builds `silverblue-main-t1` and `bluefin-t1`
-- Local build/rebase helpers via [Justfile](Justfile)
-- Feature-flagged build customization in [build_files/build.sh](build_files/build.sh)
-- MBP-specific files under [system_files](system_files)
-  - Broadcom BCM43602 firmware config template
-   - Broadcom module policy (prefer brcmfmac, blacklist conflicting modules)
-  - Camera quirk (`uvcvideo`)
-   - Suspend workaround (`s2idle` plus `d3cold_allowed=0`)
-  - Best-effort iBridge rebind service for Touch Bar
+## Hardware compatibility
 
-## Local build and rebase (same machine)
+| Feature | Status | Notes |
+|---------|--------|-------|
+| WiFi (BCM43602) | Works | firmware config + module policy included |
+| Camera (FaceTime HD) | Works | requires macOS EFI partition to be intact |
+| Touch Bar | Works | iBridge rebind service + DKMS driver |
+| Suspend/resume | Mostly works | s2idle + d3cold quirk; screen occasionally doesn't wake |
+| Sound in browser | Broken | not yet resolved |
+| Touch ID | Not supported | out of scope |
 
-1. Build image:
+## Quick start
 
-   ```bash
-   just build
-   ```
-
-   This writes the generated build tag to `.just-build-tag` and tags the image
-   with a unique build number, so each build gets its own rebase target.
-
-2. Verify built tag exists:
-
-   ```bash
-   just list-images
-   ```
-
-3. Rebase to local image:
-
-   ```bash
-   just rebase-local
-   sudo systemctl reboot
-   ```
-
-   `just rebase-local` uses the most recent recorded build tag instead of the
-   generic `local` tag.
-
-4. If the deployment is bad, rollback:
-
-   ```bash
-   just rollback
-   sudo systemctl reboot
-   ```
-
-5. Check deployment history:
-
-   ```bash
-   just status
-   ```
-
-## Optional build-time flags
-
-Set flags at build time to disable risky components quickly:
+Pick the image variant closest to your preference and rebase to it:
 
 ```bash
-ENABLE_MBP_TOUCHBAR_REBIND=0 ENABLE_MBP_CAMERA=0 just build
+# Silverblue (vanilla GNOME)
+sudo rpm-ostree rebase ostree-unverified-image:docker://ghcr.io/elephantum/silverblue-main-t1:latest
+
+# Bluefin (developer-friendly GNOME)
+sudo rpm-ostree rebase ostree-unverified-image:docker://ghcr.io/elephantum/bluefin-t1:latest
+
+# Bluefin DX (Bluefin + full dev toolbox)
+sudo rpm-ostree rebase ostree-unverified-image:docker://ghcr.io/elephantum/bluefin-dx-t1:latest
 ```
 
-Touch Bar driver build runs in a separate Containerfile layer by default. You can
-disable that layer or override the DKMS repo:
+Then reboot. That's it.
+
+To check which image you're running and its build number:
 
 ```bash
+rpm-ostree status
+```
+
+## What's included
+
+All variants ship the same hardware fix layer on top of the base image:
+
+- **WiFi**: Broadcom BCM43602 firmware config and module policy (`brcmfmac` preferred, conflicting modules blacklisted)
+- **Camera**: `uvcvideo` quirk for the iBridge UVC interface
+- **Touch Bar**: `mbp-ibridge-rebind` service that re-enumerates iBridge at boot and rebinds the HID display interface from `hid-sensor-hub` to `apple-ibridge-hid`, activating the touchbar driver
+- **Suspend**: `s2idle` sleep mode + `d3cold_allowed=0` workaround to prevent hangs on suspend/resume
+
+## Building locally
+
+If you want to customize the image or iterate on hardware fixes:
+
+```bash
+git clone https://github.com/elephantum/ublue-t1
+cd ublue-t1
+just build          # builds bluefin-dx-t1 by default
+just rebase-local   # rebases to the freshly built image
+sudo systemctl reboot
+```
+
+If the new image is bad:
+
+```bash
+just rollback
+sudo systemctl reboot
+```
+
+### Build-time flags
+
+Disable specific components to isolate issues:
+
+```bash
+ENABLE_MBP_WIFI=0 just build
+ENABLE_MBP_CAMERA=0 just build
+ENABLE_MBP_SUSPEND_QUIRK=0 just build
+ENABLE_MBP_TOUCHBAR_REBIND=0 just build
+
+# Disable or override the touchbar DKMS kernel module build
 ENABLE_MBP_TOUCHBAR_DKMS_LAYER=0 just build
-MBP_TOUCHBAR_DKMS_REPO=https://github.com/<owner>/<repo>.git just build
+MBP_TOUCHBAR_DKMS_REPO=https://github.com/<fork>.git just build
 MBP_TOUCHBAR_DKMS_BRANCH=<branch> just build
 ```
 
-Default pinned source is `https://github.com/roadrunner2/macbook12-spi-driver.git`
-with branch `touchbar-driver-hid-driver`.
-
-Supported flags in [build_files/build.sh](build_files/build.sh):
-
-- `ENABLE_MBP_WIFI` (default `1`)
-- `ENABLE_MBP_CAMERA` (default `1`)
-- `ENABLE_MBP_SUSPEND_QUIRK` (default `1`)
-- `ENABLE_MBP_TOUCHBAR_REBIND` (default `1`)
-
-Containerfile-specific flags:
-
-- `ENABLE_MBP_TOUCHBAR_DKMS_LAYER` (default `1`)
-- `MBP_TOUCHBAR_DKMS_REPO` (default `https://github.com/roadrunner2/macbook12-spi-driver.git`)
-- `MBP_TOUCHBAR_DKMS_BRANCH` (default `touchbar-driver-hid-driver`)
-
-## Known constraints
-
-- The original EFI partition is already lost, so iBridge-dependent features are best-effort.
-- Touch ID is out of scope.
-- Touch Bar and camera are non-blocking for stable image acceptance.
+Default touchbar driver source: `https://github.com/nanachi2002/macbook12-spi-driver.git`, branch `fix/kernel-6.17-compat`.
