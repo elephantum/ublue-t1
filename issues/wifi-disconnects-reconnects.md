@@ -16,9 +16,10 @@ Signal strength is excellent (-38 dBm), so RF is not the issue.
 
 ## Fixes applied
 
-1. **`feature_disable=0x2000`** in modprobe: Disables buggy firmware WPA supplicant (FWSUP) which causes `brcmf_msgbuf_delete_flowring: timed out waiting for txstatus`. Lets host OS handle WPA instead. (From animatek/macbook-bcm43602-linux project.)
+1. **`feature_disable=0x2000`** in modprobe: Disables buggy firmware WPA supplicant (FWSUP). (From animatek/macbook-bcm43602-linux, but alone insufficient.)
 2. **`roamoff=1`** in modprobe: Disables internal roaming engine.
-3. **MBP14,3-specific NVRAM calibration** in `brcmfmac43602-pcie.txt`: RF tuning and PA parameters optimized for MBP14,3.
+3. **`fcmode=0`** in modprobe: Disables firmware-signalled flow control mode, may help with flowring timeout.
+4. **MBP14,3-specific NVRAM calibration** in `brcmfmac43602-pcie.txt`: RF tuning and PA parameters optimized for MBP14,3.
 
 ## Testing
 
