@@ -1,7 +1,6 @@
 # Issues
 
 ## Backlog
-- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 - [Suspend from GNOME menu does not wake up](issues/sleep-screen-no-wake.md)
 - [Touch ID does not work](issues/touch-id-not-working.md)
 
@@ -11,6 +10,7 @@
 
 ## Testing
 
+- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 
 
 ## Done

@@ -1,6 +1,6 @@
 # Wifi disconnects and reconnects periodically
 
-**Status:** Backlog
+**Status:** Testing
 
 ## Root cause
 
@@ -28,6 +28,10 @@ Observed behavior: disconnects happen every ~60–70 seconds (23:42:50, 23:43:56
    ```
    options brcmfmac power_save=0
    ```
+
+## Fixes applied
+
+Added `options brcmfmac power_save=0` to `system_files/etc/modprobe.d/mbp14-brcmfmac.conf`. This disables the brcmfmac power save feature at module load time, preventing the firmware from aggressively dropping the association.
 
 ## Testing
 
