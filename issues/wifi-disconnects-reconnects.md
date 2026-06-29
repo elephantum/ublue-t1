@@ -16,8 +16,9 @@ Signal strength is excellent (-38 dBm), so RF is not the issue.
 
 ## Fixes applied
 
-1. **`roamoff=1`** in modprobe config: Disables driver's internal roaming engine.
-2. **MBP14,3-specific NVRAM calibration** in `brcmfmac43602-pcie.txt`: Replaced generic linux-firmware calibration with MBP14,3-tuned parameters from takiido/mbp14.3-linux repo. Includes RF tuning, PA parameters, and BT coexistence settings.
+1. **`feature_disable=0x2000`** in modprobe: Disables buggy firmware WPA supplicant (FWSUP) which causes `brcmf_msgbuf_delete_flowring: timed out waiting for txstatus`. Lets host OS handle WPA instead. (From animatek/macbook-bcm43602-linux project.)
+2. **`roamoff=1`** in modprobe: Disables internal roaming engine.
+3. **MBP14,3-specific NVRAM calibration** in `brcmfmac43602-pcie.txt`: RF tuning and PA parameters optimized for MBP14,3.
 
 ## Testing
 
