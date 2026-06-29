@@ -1,256 +1,251 @@
+boardrev=0x1101
+
 sromrev=11
-subvid=0x14e4
-boardtype=0x61b
-boardrev=0x1421
+boardtype=0x073e
 vendid=0x14e4
 devid=0x43ba
 
-macaddr=00:90:4c:00:00:00
+macaddr=00:90:4c:0d:f4:3e
 
-ccode=00
-regrev=245
+ccode=0
+regrev=1
 
-boardflags=0x10401001
-boardflags2=0x00000002
-boardflags3=0xC0000303
-boardnum=62526
 
-swctrlmap_2g=0x08080808,0x04010401,0x08080808,0x00000000,0x000000ff
-swctrlmapext_2g=0x00000000,0x00000000,0x00000000,0x000000,0x003
+# Board flags:
+# X BFL_BTCOEXIST          = 0x00000001   This board implements Bluetooth coexistence
+#   BFL_EXTLNA             = 0x00001000   This board has an external LNA (2G)
+#   BFL_FEM_BT             = 0x00400000   This board has shared antenna w/ BT
+# X BFL_PALDO              = 0x02000000   Power topology uses PALDO ? - CHECK
+#   BFL_EXTLNA_5GHz        = 0x10000000   Board has an external LNA in 5GHz band
+boardflags=0x02000001
 
-swctrlmap_5g=0x08080808,0x04010401,0x08080808,0x00000000,0x000000ff
-swctrlmapext_5g=0x00000000,0x00000000,0x00000000,0x000000,0x003
+# Board flags 2:
+#   BFL2_BT_SHARE_ANT0     = 0x00800000   share core0 antenna with BT
+# X BFL2_LNA1BYPFORTR2G    = 0x40000000   acphy, enable lna1 bypass for 2G clip lo
+# X BFL2_LNA1BYPFORTR5G    = 0x80000000   acphy, enable lna1 bypass for 5G clip lo
+# X BFL2_SPUR_WAR          = 0x00000200   Board has a WAR for clock-harmonic spurs
+#   BFL2_2G_SPUR_WAR       = 0x00002000   Board has a WAR to reduce and avoid clock-harmonic spurs in 2G band
+boardflags2=0xC0000000
 
-aa2g=7
-aa5g=7
-agbg0=133
-agbg1=133
-agbg2=133
-aga0=71
-aga1=71
-aga2=71
-txchain=7
-rxchain=7
+# Board flags 3:
+# X BFL3_RCAL_WAR          = 0x00000008   acphy rcal war active on this board (mainly for 4335a0)
+# X BFL3_FEMTBL_FROM_NVRAM = 0x00000100   acphy, femctrl table is read from nvram
+boardflags3=0x40000108
+
+#btc_mode=0
+
+#### added rx de-sense
+
+btcdyn_flags=0x7
+# Media profile
+btcdyn_profile_type=0x2
+btcdyn_dflt_dsns_level=0
+btcdyn_low_dsns_level=0
+btcdyn_mid_dsns_level=21
+btcdyn_high_dsns_level=22
+btcdyn_default_btc_mode=4
+# --- number of rows in the array vars below ---
+btcdyn_msw_rows=1
+btcdyn_dsns_rows=1
+# --- mode switch data rows (max is 4) ---
+btcdyn_msw_row0=1,-16,-95,-100
+# --- desense switching data rows (max is 4) ---
+btcdyn_dsns_row0=4,-16,-63,-95
+
+#### end of rx de-sense
+
+
+xtalfreq=40000
+otpimagesize=484
+nocrc=1
+muxenab=0x1
+btc_params82=0x60
+
+
+
+########################################################
+# RF Control Definitions
+
 antswitch=0
-tssiposslope2g=1
-epagain2g=0
-pdgain2g=28
-tworangetssi2g=0
-papdcap2g=0
-femctrl=2
-tssiposslope5g=1
-epagain5g=0
-pdgain5g=28
+rxchain=3
+txchain=3
+aa2g=3
+aa5g=3
+femctrl=10
+
+# antenna gain per core g-band
+agbg0=2
+agbg1=2
+
+# antenna gain per core a-band
+aga0=2
+aga1=2
+
+# RFSWCTRL 2G and 5G iLNA
+#            WL_TX,     WL_RX,     WL_RX_ATTN, BT_TX_RX, WL_MASK
+swctrlmap_2g=0x04010401,0x08080808,0x04010401,0x00000000,0x000000ff
+swctrlmap_5g=0x08080808,0x04010401,0x08080808,0x00000000,0x000000ff
+
+swctrlmapext_2g=0x00000000,0x00000000,0x00000000,0x000000,0x003
+swctrlmapext_5g=0x00000000,0x00000000,0x00000000,0x000000,0x003
+########################################################
+
+# Bypass offsetting PAPD_EPS_TABLE_PER_TX_INDEX feature
+epsdelta2g0=0,-1,0,0,0,0,0,0
+epsdelta2g1=0,-1,0,0,0,0,0,0
+
+########################################################
+# Rx gain and RSSI parameters
+#
+# Default so do not set:
+# rxgaincal_rssical=0
+# rssi_cal_rev=0
+# rxgains[25]gtrisoa[01]
+# rxgains[25]g[mh]trelnabypa[01]=0
+
+# BW20,BW40
+rssicorrnorm_c0=4,4
+rssicorrnorm_c1=4,4
+
+# subband5gver=4 =>
+# BW20,BW40,BW80  <5250|<5500|<5745|>=5745
+#                  <70m| <100| <149|>=149
+rssicorrnorm5g_c0=1,2,3,1,2,3,1,2,3,1,2,3
+rssicorrnorm5g_c1=1,2,3,1,2,3,1,2,3,1,2,3
+
+########################################################
+
+
+########################################################
+# 20 MHz in 40 MHz Power Offsets and Duplicate Modes
+# 2G and 5G bands
+
+sb20in40hrpo=0x0
+sb20in40lrpo=0x0
+
+dot11agduphrpo=0x0
+dot11agduplrpo=0x0
+########################################################
+
+
+########################################################
+# PAPD parameters
+fastpapdgainctrl=0
+
+########################################################
+# 2G TSSI / PA Parameters
+
+tworangetssi2g=1
+tssipos2g=1
+extpagain2g=2
+pdgain2g=2
+
+# 2G Max Power
+maxp2ga0=74
+maxp2ga1=74
+
+# 2G PA Parameters
+# Order is A1,B0,B1
+#pa2ga0=-125,6514,-739  used for p113 and p115
+#pa2ga1=-141,6391,-738  used for p113 and p115
+#pa2ga0=-169,6473,-759
+#pa2ga1=-174,6462,-759
+pa2ga0=-162,6368,-735
+pa2ga1=-170,6349,-742
+
+
+
+# 2G Power Offsets
+cckbw202gpo=0x0000
+cckbw20ul2gpo=0x0000
+mcsbw202gpo=0x99644422
+mcsbw402gpo=0x99644422
+dot11agofdmhrbw202gpo=0x6666
+ofdmlrbw202gpo=0x0022
+
+########################################################
+
+#AvVmid_c0=2,140,2,145,2,145,2,145,2,145
+#AvVmid_c1=2,140,2,145,2,145,2,145,2,145
+#AvVmid_c2=0,0,0,0,0,0,0,0,0,0
+
+# AvVmid 2GHz and 5GHz LabNotebook 43569A2_012 data from pcieir
+AvVmid_c0=2,140,2,125,2,125,2,135,2,135
+AvVmid_c1=2,140,3,100,3,100,3,100,3,100
+AvVmid_c2=0,0,0,0,0,0,0,0,0,0
+
+########################################################
+# 5G TSSI / PA Parameters
+
 tworangetssi5g=0
-papdcap5g=0
-gainctrlsph=0
+tssipos5g=1
+extpagain5g=2
+subband5gver=0x4
+pdgain5g=2
+
+# 5G Max Powers
+maxp5ga0=74,74,74,74
+maxp5ga1=74,74,74,74
+
+# 5G PA Parameters initial
+#pa5ga0=152,5462,658,150,5547,663,150,5950,697,170,5782,688
+#pa5ga1=177,5661,685,178,5712,691,166,6161,725,195,5811,706
+
+# 5G PA Parameters *** from LabNotebook 43569A0_099 TSSI opt for 8::18:
+#pa5ga0=-181,5835,-709,-183,5842,-712,-186,5832,-710,-187,5744,-703
+#pa5ga1=-198,5767,-710,-190,5915,-721,-185,6067,-732,-186,6024,-731
+
+# Updated with LabNotebook 43569A2_012
+pa5ga0=-194,5833,-713,-186,6042,-730,-181,5927,-714,-197,5562,-687
+pa5ga1=-186,6139,-737,-196,5988,-726,-203,5852,-713,-204,5836,-713
+
+
+
+# 5G Power Offsets
+mcsbw205glpo=0x88766663
+mcsbw405glpo=0x88666663
+mcsbw805glpo=0xbb666665
+mcsbw205gmpo=0xd8666663
+mcsbw405gmpo=0x88666663
+mcsbw805gmpo=0xcc666665
+mcsbw205ghpo=0xdc666663
+mcsbw405ghpo=0xaa666663
+mcsbw805ghpo=0xdd666665
+mcslr5glpo=0x0000
+mcslr5gmpo=0x0000
+mcslr5ghpo=0x0000
+sb20in40hrpo=0x0
+sb20in80and160hr5glpo=0x0
+sb40and80hr5glpo=0x0
+sb20in80and160hr5gmpo=0x0
+sb40and80hr5gmpo=0x0
+sb20in80and160hr5ghpo=0x0
+sb40and80hr5ghpo=0x0
+sb20in40lrpo=0x0
+sb20in80and160lr5glpo=0x0
+sb40and80lr5glpo=0x0
+sb20in80and160lr5gmpo=0x0
+sb40and80lr5gmpo=0x0
+sb20in80and160lr5ghpo=0x0
+sb40and80lr5ghpo=0x0
+
+pdoffset40ma0=0x0000
+pdoffset80ma0=0x0000
+pdoffset40ma1=0x0000
+pdoffset80ma1=0x0000
+
+########################################################
+
+
+########################################################
+# Temperature Values
+
 tempthresh=120
 tempoffset=255
 rawtempsense=0x1ff
-measpower=0x7f
-tempsense_slope=0xff
-tempcorrx=0x3f
-tempsense_option=0x3
-xtalfreq=40000
-phycal_tempdelta=40
-temps_period=1
-temps_hysteresis=5
-measpower1=0x7f
-measpower2=0x7f
-pdoffsetcck=1057
-pdoffset20in40m5gb0=0
-pdoffset20in40m5gb1=0
-pdoffset20in40m5gb2=0
-pdoffset20in40m5gb3=0
-pdoffset20in40m5gb4=0
-pdoffset40in80m5gb0=0
-pdoffset40in80m5gb1=0
-pdoffset40in80m5gb2=0
-pdoffset40in80m5gb3=0
-pdoffset40in80m5gb4=0
-pdoffset20in80m5gb0=0
-pdoffset20in80m5gb1=0
-pdoffset20in80m5gb2=0
-pdoffset20in80m5gb3=0
-pdoffset20in80m5gb4=0
-subband5gver=0x5
-cckbw202gpo=0
-cckbw20ul2gpo=0
-mcsbw202gpo=2536714240
-mcsbw402gpo=2536714240
-dot11agofdmhrbw202gpo=13056
-ofdmlrbw202gpo=0
-mcsbw205glpo=1966288896
-mcsbw405glpo=2252619776
-mcsbw805glpo=2252619776
-mcsbw205gmpo=1966288896
-mcsbw405gmpo=2252619776
-mcsbw805gmpo=2252619776
-mcsbw205ghpo=1966288896
-mcsbw405ghpo=2252619776
-mcsbw805ghpo=2252619776
-mcsbw205gx1po=1966288896
-mcsbw405gx1po=2252619776
-mcsbw805gx1po=2252619776
-mcsbw205gx2po=1966288896
-mcsbw405gx2po=2252619776
-mcsbw805gx2po=2252619776
-mcslr5glpo=0
-mcslr5gmpo=0
-mcslr5ghpo=0
-mcslr5gx1po=0
-mcslr5gx2po=0
-sb20in40hrpo=0
-sb20in80and160hr5glpo=0
-sb40and80hr5glpo=0
-sb20in80and160hr5gmpo=0
-sb40and80hr5gmpo=0
-sb20in80and160hr5ghpo=0
-sb40and80hr5ghpo=0
-sb20in40lrpo=0
-sb20in80and160lr5glpo=0
-sb40and80lr5glpo=0
-sb20in80and160lr5gmpo=0
-sb40and80lr5gmpo=0
-sb20in80and160lr5ghpo=0
-sb40and80lr5ghpo=0
-sb20in80and160hr5gx1po=0
-sb20in80and160lr5gx1po=0
-sb40and80hr5gx1po=0
-sb20in80and160hr5gx2po=0
-sb20in80and160lr5gx2po=0
-sb40and80hr5gx2po=0
-dot11agduphrpo=0
-dot11agduplrpo=52416
-pcieingress_war=15
-sar2g=18
-sar5g=15
-noiselvl2ga0=31
-noiselvl2ga1=31
-noiselvl2ga2=31
-noiselvl5ga0=18,18,18,20
-noiselvl5ga1=1,1,1,17
-noiselvl5ga2=11,11,11,11
-rxgainerr2ga0=63
-rxgainerr2ga1=31
-rxgainerr2ga2=31
-rxgainerr5ga0=50,50,50,52
-rxgainerr5ga1=16,16,16,24
-rxgainerr5ga2=5,5,5,5
-rpcal2g=65535
-rpcal5gb0=65535
-rpcal5gb1=65535
-rpcal5gb2=65535
-rpcal5gb3=65535
-rxgains5gmelnagaina0=3
-rxgains5gmelnagaina1=3
-rxgains5gmelnagaina2=3
-rxgains5gmtrisoa0=9
-rxgains5gmtrisoa1=9
-rxgains5gmtrisoa2=9
-rxgains5gmtrelnabypa0=0
-rxgains5gmtrelnabypa1=0
-rxgains5gmtrelnabypa2=0
-rxgains5ghelnagaina0=2
-rxgains5ghelnagaina1=2
-rxgains5ghelnagaina2=2
-rxgains5ghtrisoa0=8
-rxgains5ghtrisoa1=8
-rxgains5ghtrisoa2=8
-rxgains5ghtrelnabypa0=0
-rxgains5ghtrelnabypa1=0
-rxgains5ghtrelnabypa2=0
-gain_cal_temp=39
-rssi_delta_2gb0=8,16,8,16,253,18,253,18,254,17,254,17
-rssi_delta_2gb1=255,255,255,255,255,255,255,255,255,255,255,255
-rssi_delta_2gb2=255,255,255,255,255,255,255,255,255,255,255,255
-rssi_delta_2gb3=255,255,255,255,255,255,255,255,255,255,255,255
-rssi_delta_2gb4=255,255,255,255,255,255,255,255,255,255,255,255
-rssi_cal_freq_grp_2g=0,0,128,0,0,0,0
-rud_agc_enable=0
-temp_comp_tr_loss=1
-rssi_qdB_en=0
-rssi_delta_5gl=8,6,8,6,8,6,5,6,5,6,5,6,9,8,9,8,9,8
-rssi_delta_5gml=250,237,250,237,250,237,248,236,248,236,248,236,249,237,249,237,249,237
-rssi_delta_5gmu=250,237,250,237,250,237,248,234,248,234,248,234,249,237,249,237,249,237
-rssi_delta_5gh=250,235,250,235,250,235,247,233,247,233,247,233,249,237,249,237,249,237
-rssicorrnorm_c0=251,255
-rssicorrnorm_c1=251,255
-rssicorrnorm_c2=251,255
-trloss_adj_temp_thresh=10
-trloss_adj_time_dur=30
-rstr_rxgaintempcoeff5gl=50,50,50
-rstr_rxgaintempcoeff5gl_elnaoff=44,44,44
-rstr_rxgaintempcoeff5gml=50,50,50
-rstr_rxgaintempcoeff5gml_elnaoff=44,44,44
-rstr_rxgaintempcoeff5gmu=50,50,50
-rstr_rxgaintempcoeff5gmu_elnaoff=44,44,44
-rstr_rxgaintempcoeff5gh=52,52,52
-rstr_rxgaintempcoeff5gh_elnaoff=46,46,46
-rstr_rxgaintempcoeff2g_sub=75,75,75,75,75,75,75,75,75,75,75,75,75,75,75
-rstr_rxgaintempcoeff2g_sub_elnaoff=66,66,66,66,66,66,66,66,66,66,66,66,66,66,66
-length_txcal=65535
-version_txcal=65535
-devicetype_txcal=65535
-caltype_txcal=65535
-tempsense_txcal=35
-ncores_txcal=255
-reserved1_txcal=255
-reserved2_txcal=255
-20mhz_tbl_len_txcal=65535
-nsteps_txcal=22
-nchannels_txcal=10
-chan_id_txcal_ch0=7
-chan_id_txcal_ch1=36
-chan_id_txcal_ch2=52
-chan_id_txcal_ch3=64
-chan_id_txcal_ch4=100
-chan_id_txcal_ch5=120
-chan_id_txcal_ch6=140
-chan_id_txcal_ch7=149
-chan_id_txcal_ch8=157
-chan_id_txcal_ch9=165
-ptssi_txcal_ch0=0
-ptssi_txcal_ch1=0
-ptssi_txcal_ch2=0
-ptssi_txcal_ch3=0
-ptssi_txcal_ch4=0
-ptssi_txcal_ch5=0
-ptssi_txcal_ch6=0
-ptssi_txcal_ch7=0
-ptssi_txcal_ch8=0
-ptssi_txcal_ch9=0
-gain_index_c0_ch0=54
-gain_index_c0_ch1=57
-gain_index_c0_ch2=58
-gain_index_c0_ch3=59
-gain_index_c0_ch4=60
-gain_index_c0_ch5=59
-gain_index_c0_ch6=61
-gain_index_c0_ch7=60
-gain_index_c0_ch8=61
-gain_index_c0_ch9=62
-gain_index_c1_ch0=54
-gain_index_c1_ch1=58
-gain_index_c1_ch2=59
-gain_index_c1_ch3=60
-gain_index_c1_ch4=61
-gain_index_c1_ch5=61
-gain_index_c1_ch6=62
-gain_index_c1_ch7=62
-gain_index_c1_ch8=62
-gain_index_c1_ch9=62
-gain_index_c2_ch0=57
-gain_index_c2_ch1=57
-gain_index_c2_ch2=59
-gain_index_c2_ch3=59
-gain_index_c2_ch4=61
-gain_index_c2_ch5=60
-gain_index_c2_ch6=61
-gain_index_c2_ch7=61
-gain_index_c2_ch8=61
-gain_index_c2_ch9=61
-tssi_chan0_c0=248,244,241,237,232,226,220,211,203,193,183,172,162,150,138,128,116,105,94,83,73,61
-tssi_chan0_c1=247,245,241,237,232,226,218,210,201,191,181,168,158,146,134,122,111,98,87,75,64,52
-tssi_chan0_c2=248,245,242,238,233,227,221,213,204,194,185,173,162,151,140,129,118,107,97,87,77,67
-tssi_chan1_c0=234,228,223,218,212,205,198,191,183,176,168,159,150,141,131,121,110,98,87,75,64,53
+
+phycal_tempdelta=255
+temps_period=15
+temps_hysteresis=15
+
+########################################################

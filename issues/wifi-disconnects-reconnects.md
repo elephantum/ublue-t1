@@ -1,37 +1,23 @@
 # Wifi disconnects and reconnects periodically
 
-**Status:** Testing
+**Status:** In Progress
 
 ## Root cause
 
-Multiple contributing factors identified from logs and driver state:
+The `brcmf_msgbuf_delete_flowring: timed out waiting for txstatus` error causes the driver to force a reset every ~65 seconds, triggering the disconnect cycle. This is a firmware bug in the generic BCM43602 firmware (Nov 2015) that ships with linux-firmware.
 
-1. **Missing Apple-specific firmware**: The `brcmfmac` driver (BCM43602) fails to load the device-specific firmware blob `brcm/brcmfmac43602-pcie.Apple Inc.-MacBookPro14,3.bin` and falls back to generic firmware dated Nov 2015. The CLM blob (`brcmfmac43602-pcie.clm_blob`) and txcap blob also fail to load, which limits channel availability and may reduce stability.
+The Apple-specific firmware `brcm/brcmfmac43602-pcie.Apple Inc.-MacBookPro14,3.bin` (plus CLM blob and txcap blob) is missing. The driver falls back to generic firmware which has the flowring timeout bug. linux-firmware 20260519 (latest) still does not include the Apple blob.
 
-2. **Firmware timeouts**: Kernel logs show `brcmf_msgbuf_delete_flowring: timed out waiting for txstatus`, indicating the firmware is hanging during flow ring cleanup — a known instability symptom with brcmfmac on Apple hardware.
+Signal strength is excellent (-38 dBm), so RF is not the issue.
 
-3. **Wifi power management enabled**: The brcmfmac `power_save` parameter is set to `10`. This can cause the firmware to drop the association while aggressively power-saving, triggering the periodic reconnect cycle.
+## Fixes tried
 
-Observed behavior: disconnects happen every ~60–70 seconds (23:42:50, 23:43:56, 23:45:02 in today's logs), reconnects take ~3 seconds. Signal strength is excellent (-38 dBm) so RF is not the issue.
-
-## Fixes to try
-
-1. **Disable wifi power management** (quickest to test):
-   ```
-   sudo iw dev wlp3s0 set power_save off
-   ```
-   Or persistently via NetworkManager: add `wifi.powersave = 2` to the connection profile.
-
-2. **Install Apple firmware blobs**: The `linux-firmware` package or the `linux-firmware-whence` may have updated brcmfmac firmware. Alternatively, firmware can be extracted from macOS. Check if a newer `linux-firmware` update is available in Fedora repos.
-
-3. **Disable brcmfmac power_save at module level**: Create `/etc/modprobe.d/brcmfmac.conf` with:
-   ```
-   options brcmfmac power_save=0
-   ```
+- **`options brcmfmac power_save=0`** — invalid parameter (kernel: `unknown parameter 'power_save' ignored`). Removed.
 
 ## Fixes applied
 
-Added `options brcmfmac power_save=0` to `system_files/etc/modprobe.d/mbp14-brcmfmac.conf`. This disables the brcmfmac power save feature at module load time, preventing the firmware from aggressively dropping the association.
+1. **`roamoff=1`** in modprobe config: Disables driver's internal roaming engine.
+2. **MBP14,3-specific NVRAM calibration** in `brcmfmac43602-pcie.txt`: Replaced generic linux-firmware calibration with MBP14,3-tuned parameters from takiido/mbp14.3-linux repo. Includes RF tuning, PA parameters, and BT coexistence settings.
 
 ## Testing
 

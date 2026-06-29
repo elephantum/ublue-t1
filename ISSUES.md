@@ -6,11 +6,9 @@
 
 ## In progress
 
-
+- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 
 ## Testing
-
-- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 
 
 ## Done
