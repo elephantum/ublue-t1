@@ -1,6 +1,6 @@
 # Suspend from GNOME menu does not wake up
 
-**Status:** Backlog
+**Status:** Testing
 
 ## Description
 
@@ -30,3 +30,35 @@ Reviewed `journalctl -b -1` (the boot where this last happened, 2026-07-07 15:50
 - NVMe d3cold is disabled at boot (`mbp14-d3cold.service`) for suspend stability
 - Also reproduces when the lid is closed to put the system to sleep: reopening the lid does not wake it up (screen stays dark, keyboard does not light up), consistent with the GNOME-menu suspend case above
 - 2026-07-07: reproduced again, requiring a hard power-off. Preceded by a rocky resume from an earlier suspend (see Root cause above) — worth testing whether avoiding back-to-back suspend/resume cycles, or fixing the wifi D3cold resume failure, reduces how often the full hang happens
+
+## Fixes applied
+
+Given how frequently resume fails outright (requiring a hard power-off), decided to
+stop chasing individual triggers and disable sleep entirely at the systemd level
+instead of trying to fix wake reliability:
+
+- `system_files/etc/systemd/sleep.conf.d/mbp14-suspend.conf`: replaced the
+  `MemorySleepMode=s2idle` preference with `AllowSuspend=no`,
+  `AllowHibernation=no`, `AllowSuspendThenHibernate=no`, `AllowHybridSleep=no`.
+  `logind` and GNOME's power settings both consult these `Allow*` flags before
+  entering any sleep state, so this covers the GNOME menu, lid-close, and any
+  idle-timeout suspend triggers in one place, without needing separate
+  `logind.conf` lid-switch or GNOME dconf overrides.
+
+This is a workaround, not a fix for the underlying resume failure — it trades
+suspend/resume for "the laptop never sleeps and always stays responsive."
+
+## Testing
+
+1. Rebuild and boot the image with the updated `mbp14-suspend.conf`.
+2. Confirm the drop-in is in effect: `systemctl sleep-config` (systemd 256+) or
+   `busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager CanSuspend`
+   should report `no`.
+3. From the GNOME menu, confirm "Suspend" is greyed out / absent, or that
+   selecting it does nothing (no black screen, no hang).
+4. Close the lid and reopen it — the screen should blank/lock but the system
+   should not attempt to suspend, and reopening should not require a hard
+   power-off.
+5. Leave the machine idle past the normal auto-suspend timeout and confirm it
+   does not suspend (screen may still blank/lock, which is expected and
+   separate from suspend).
