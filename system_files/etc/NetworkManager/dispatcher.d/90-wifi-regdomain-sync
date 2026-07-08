@@ -1,0 +1,39 @@
+#!/bin/bash
+# Promote the connected AP's advertised regulatory country (802.11d Country
+# IE) to a persistent cfg80211 "user" regulatory hint.
+#
+# Why: cfg80211 treats a country learned from an AP's Country IE as a
+# low-persistence hint that reverts to the boot-time (timezone-derived, see
+# /usr/bin/setregdomain) user hint on disconnect. If the two disagree, every
+# reconnect re-applies the AP's country, which can narrow the allowed
+# channel width (e.g. 80MHz -> 40MHz). 60 seconds later cfg80211's
+# regulatory enforcement (REG_ENFORCE_GRACE_MS, net/wireless/reg.c)
+# force-disconnects any link that no longer fits the narrowed rules,
+# producing an endless disconnect/reconnect loop. See
+# issues/wifi-disconnects-reconnects.md for the full writeup (observed on
+# BCM43602 / MacBookPro14,3, but the mechanism is generic to any adapter).
+#
+# Re-asserting the AP's country as a *user* hint makes future Country IE
+# processing for that same country a no-op, so the link stabilizes -
+# regardless of which AP or which country code is involved. This makes the
+# fix portable across networks/countries instead of pinning one AP's value
+# into the image.
+
+interface="$1"
+action="$2"
+
+[ "$action" = "up" ] || exit 0
+iw dev "$interface" info >/dev/null 2>&1 || exit 0
+
+country=$(iw reg get | awk '/^global/{f=1; next} f && /^country/{print $2; exit}')
+country=${country%:}
+
+case "$country" in
+    ""|00|97|98|99) exit 0 ;; # empty/world/self-managed placeholder domains
+esac
+
+if [ "$country" != "$(cat /run/wifi-regdomain-sync-last 2>/dev/null)" ]; then
+    logger -t wifi-regdomain-sync "promoting AP-advertised country $country ($interface) to user regulatory hint"
+    iw reg set "$country"
+    echo "$country" > /run/wifi-regdomain-sync-last
+fi
