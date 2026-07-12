@@ -1,5 +1,9 @@
 # CLAUDE.md
 
+## Version control
+
+This repo uses **Jujutsu (`jj`)**, not raw `git` commands. Use `jj st`, `jj diff`, `jj log`, `jj commit`/`jj describe`, `jj bookmark`, etc. instead of their `git` equivalents. The `.git` directory is present (jj's colocated git backend) but should not be driven directly with `git` commands.
+
 ## Issue workflow
 
 Issues are tracked in `ISSUES.md` (kanban index) and individual files under `issues/`.
