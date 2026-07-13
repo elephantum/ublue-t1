@@ -34,3 +34,4 @@ chmod +x /usr/libexec/mbp-ibridge-rebind.sh 2>/dev/null || true
 
 systemctl enable mbp14-d3cold.service 2>/dev/null || true
 systemctl enable mbp-ibridge-rebind.service 2>/dev/null || true
+systemctl enable mbpfan.service 2>/dev/null || true

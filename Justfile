@@ -13,6 +13,8 @@ build target_image=image_name:
       --build-arg MBP_TOUCHBAR_DKMS_BRANCH="${MBP_TOUCHBAR_DKMS_BRANCH:-fix/kernel-6.17-compat}" \
       --build-arg MBP_AUDIO_DKMS_REPO="${MBP_AUDIO_DKMS_REPO:-https://github.com/davidjo/snd_hda_macbookpro.git}" \
       --build-arg MBP_AUDIO_DKMS_BRANCH="${MBP_AUDIO_DKMS_BRANCH:-master}" \
+      --build-arg MBP_FAN_DAEMON_REPO="${MBP_FAN_DAEMON_REPO:-https://github.com/linux-on-mac/mbpfan.git}" \
+      --build-arg MBP_FAN_DAEMON_BRANCH="${MBP_FAN_DAEMON_BRANCH:-master}" \
       --tag localhost/{{target_image}}:${build_tag} \
       --tag localhost/{{target_image}}:{{default_tag}} .; \
     printf '%s\n' "${build_tag}" > "{{build_tag_file}}"
