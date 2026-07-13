@@ -14,6 +14,7 @@ Built on top of [Universal Blue](https://universal-blue.org/) / Fedora Silverblu
 | Suspend/resume | Disabled | resume was unreliable and could hang the machine, so sleep is disabled entirely rather than risk it — [details](issues/sleep-screen-no-wake.md) |
 | Sound | Works | custom Cirrus CS8409 codec driver (davidjo/snd_hda_macbookpro) — [details](issues/sound-no-audio.md) |
 | Touch ID | Not supported | no known Linux driver for the T1 secure enclave — [details](issues/touch-id-not-working.md) |
+| Display (horizontal lines) | Mitigation applied | `mbpfan` daemon ramps fans up earlier (60-65°C) to reduce heat at the hinge/display cable — [details](issues/screen-horizontal-lines.md) |
 
 ## Quick start
 
@@ -43,6 +44,7 @@ All variants ship the same hardware fix layer on top of the base image:
 - **Suspend**: disabled entirely via `systemd-sleep` (`AllowSuspend=no` and friends) because resume reliably left the machine hung; NVMe `d3cold_allowed=0` is also set at boot as a lingering stability precaution ([issue](issues/sleep-screen-no-wake.md))
 - **Sound**: Custom Cirrus CS8409 codec driver with Apple MacBook Pro amplifier support ([issue](issues/sound-no-audio.md))
 - **GRUB identity**: `os-release` is generated at build time so `rpm-ostree status` and the GRUB menu show the real image name and full build number instead of generic Bluefin/short-version labels ([issue](issues/grub-name-bluefin.md), [issue](issues/grub-full-build-number.md))
+- **Fan control**: `mbpfan` daemon (built from source, no kernel module needed) ramps fans up starting at 60°C instead of waiting for the stock Linux thermal curve, to reduce sustained heat at the display hinge ([issue](issues/screen-horizontal-lines.md))
 
 ## Building locally
 
@@ -83,4 +85,15 @@ Override at build time:
 ```bash
 MBP_AUDIO_DKMS_REPO=https://github.com/<fork>.git just build
 MBP_AUDIO_DKMS_BRANCH=<branch> just build
+```
+
+### Fan daemon source
+
+Default fan daemon source: `https://github.com/linux-on-mac/mbpfan.git`, branch `master`.
+
+Override at build time:
+
+```bash
+MBP_FAN_DAEMON_REPO=https://github.com/<fork>.git just build
+MBP_FAN_DAEMON_BRANCH=<branch> just build
 ```

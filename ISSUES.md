@@ -9,6 +9,7 @@
 
 - [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 - [Suspend from GNOME menu does not wake up](issues/sleep-screen-no-wake.md)
+- [Screen shows horizontal lines after some use](issues/screen-horizontal-lines.md)
 
 ## Done
 
