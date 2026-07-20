@@ -7,12 +7,12 @@
 
 ## Testing
 
-- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 - [Suspend from GNOME menu does not wake up](issues/sleep-screen-no-wake.md)
 - [Screen shows horizontal lines after some use](issues/screen-horizontal-lines.md)
 
 ## Done
 
+- [Wifi disconnects and reconnects periodically](issues/wifi-disconnects-reconnects.md)
 - [Add ability to hibernate](issues/add-hibernate.md)
 - [Sound does not work in browser](issues/sound-no-audio.md)
 - [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)

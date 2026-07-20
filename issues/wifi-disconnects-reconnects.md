@@ -1,6 +1,6 @@
 # Wifi disconnects and reconnects periodically
 
-**Status:** Testing
+**Status:** Done
 
 ## Root cause
 
@@ -93,3 +93,5 @@ After rebasing onto the rebuilt image:
    Expect no `CTRL-EVENT-DISCONNECTED` lines.
 
 ## Notes
+
+Everything is fixed. WiFi stays connected reliably with no periodic disconnects.
