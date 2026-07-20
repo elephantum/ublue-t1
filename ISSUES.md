@@ -13,6 +13,7 @@
 
 ## Done
 
+- [Add ability to hibernate](issues/add-hibernate.md)
 - [Sound does not work in browser](issues/sound-no-audio.md)
 - [Touchbar is dark and inactive](issues/touchbar-dark-inactive.md)
 - [Build multiple images](issues/build-multiple-images.md)
