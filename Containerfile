@@ -10,8 +10,8 @@ ARG MBP_FAN_DAEMON_BRANCH=master
 FROM ${BASE_IMAGE} AS touchbar-builder
 
 # Layer 1: Install build deps — cached until base image kernel changes
-RUN kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
-    dnf5 install -y dkms git gcc make "kernel-devel-${kernel_version}"
+COPY build_files/install-kernel-devel.sh /tmp/install-kernel-devel.sh
+RUN bash /tmp/install-kernel-devel.sh
 
 # Layer 2: Clone source — cached until REPO/BRANCH args change
 ARG MBP_TOUCHBAR_DKMS_REPO
@@ -27,8 +27,8 @@ RUN bash /tmp/build-module.sh
 FROM ${BASE_IMAGE} AS audio-builder
 
 # Layer 1: Install build deps — cached until base image kernel changes
-RUN kernel_version="$(ls /lib/modules/ | sort -V | tail -n1)" && \
-    dnf5 install -y dkms git gcc make "kernel-devel-${kernel_version}"
+COPY build_files/install-kernel-devel.sh /tmp/install-kernel-devel.sh
+RUN bash /tmp/install-kernel-devel.sh
 
 # Layer 2: Clone source — cached until REPO/BRANCH args change
 ARG MBP_AUDIO_DKMS_REPO
